@@ -14,9 +14,8 @@ Boostora is a Python package that simplifies the process of hyperparameter tunin
 To install Boostora, run the following command:
 
 ```bash
-pip install git+https://github.com/yourusername/boostora.git
+pip install git+https://github.com/y-nishizaki/boostora.git
 ```
-Replace yourusername with your GitHub username and boostora with your repository name if you have a different repository name.
 
 # Usage
 ```Python
