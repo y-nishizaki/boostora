@@ -8,14 +8,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="your-package-name",
+    name="boostora",
     version="0.1.0",
-    author="Your Name",
+    author="Yoshihisa Nishizaki",
     author_email="your.email@example.com",
-    description="A short description of your package",
+    description="Boostora is a Python package that simplifies the process of hyperparameter tuning and visualization for XGBoost models using Optuna and SHAP.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/your-package-name",
+    url="https://github.com/y-nishizaki/boostora",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
