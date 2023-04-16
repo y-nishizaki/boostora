@@ -177,11 +177,9 @@ class Boostora:
 
             self.save_and_log_visualizations(study, best_model, X_test)
 
-    def create_dmatrix(self, X, y):
-        if self.classification:
-            return xgb.DMatrix(X, label=y)
+    def create_dmatrix(X, y=None, enable_categorical=True):
+        if y is not None:
+            return xgb.DMatrix(X, label=y, enable_categorical=enable_categorical)
         else:
-            return xgb.DMatrix(X, label=y)
-
-
-
+            return xgb.DMatrix(X, enable_categorical=enable_categorical)
+    
