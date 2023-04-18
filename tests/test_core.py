@@ -1,28 +1,74 @@
-import os
+import pytest
 import pandas as pd
-import unittest
-from boostora import Boostora
+import numpy as np
+import optuna
+from boostora.core import Boostora
+from sklearn.datasets import make_classification, make_regression
 
-class TestBoostora(unittest.TestCase):
-    def test_classification(self):
-        df = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data', header=None)
-        df.columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'species']
-        df['species'] = df['species'].map({'Iris-setosa': 0, 'Iris-versicolor': 1, 'Iris-virginica': 2})
+@pytest.fixture
+def classification_data():
+    X, y = make_classification(n_samples=100, n_features=10, random_state=42)
+    df = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(X.shape[1])])
+    df['target'] = y
+    return df
 
-        target_col = 'species'
+@pytest.fixture
+def regression_data():
+    X, y = make_regression(n_samples=100, n_features=10, random_state=42)
+    df = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(X.shape[1])])
+    df['target'] = y
+    return df
 
-        boostora = Boostora(classification=True)
-        boostora.run_framework(df, target_col, experiment_name="Boostora_Classification_Test", n_trials=10)
+def test_load_data_classification(classification_data):
+    boostora = Boostora(classification=True)
+    X_train, X_test, y_train, y_test = boostora.load_data(classification_data, 'target')
+    assert X_train.shape[0] == 80
+    assert X_test.shape[0] == 20
 
-    def test_regression(self):
-        df = pd.read_csv('https://raw.githubusercontent.com/jbrownlee/Datasets/master/housing.data', header=None, sep='\s+')
-        df.columns = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
+def test_load_data_regression(regression_data):
+    boostora = Boostora()
+    X_train, X_test, y_train, y_test = boostora.load_data(regression_data, 'target')
+    assert X_train.shape[0] == 80
+    assert X_test.shape[0] == 20
 
-        target_col = 'MEDV'
+def test_default_param_tuning_classification():
+    boostora = Boostora(classification=True)
+    fixed_params = {
+        "booster": "gbtree",
+        "lambda": 1.0,
+        "alpha": 1e-8,  # Change from 0.0 to 1e-8
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "colsample_bylevel": 1.0,
+        "colsample_bynode": 1.0,
+        "eta": 0.3,
+        "max_depth": 6,
+        "gamma": 1e-8,
+        "grow_policy": "depthwise",
+    }
+    trial = optuna.trial.FixedTrial(fixed_params)
+    params = boostora.default_param_tuning(trial)
+    assert params['objective'] == 'binary:logistic'
+    assert params['eval_metric'] == 'logloss'
 
-        boostora = Boostora(classification=False)
-        boostora.run_framework(df, target_col, experiment_name="Boostora_Regression_Test", n_trials=10)
+def test_default_param_tuning_regression():
+    boostora = Boostora()
+    fixed_params = {
+        "booster": "gbtree",
+        "lambda": 1.0,
+        "alpha": 1e-8,
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "colsample_bylevel": 1.0,
+        "colsample_bynode": 1.0,
+        "eta": 0.3,
+        "max_depth": 6,
+        "gamma": 1e-8,
+        "grow_policy": "depthwise",
+    }
+    trial = optuna.trial.FixedTrial(fixed_params)
+    params = boostora.default_param_tuning(trial)
+    assert params['objective'] == 'reg:squarederror'
+    assert params['eval_metric'] == 'rmse'    
 
-
-if __name__ == '__main__':
-    unittest.main()
+# 追加のテストを実行する場合は、ここに記述してください。
