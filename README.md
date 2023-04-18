@@ -38,3 +38,23 @@ Boostora is released under the [MIT License](https://opensource.org/license/mit/
 
 # Appendix
 「Boostora」は、"Boost"（ブースト）と、"Exploratory"（探索的）の一部である "ora" を組み合わせた造語です。ブーストはXGBoostの能力を強調し、"ora" は探索的なオプティマイゼーションプロセスを表現しています。Boostoraは、XGBoostのパフォーマンスを最大限に引き出すための探索的なフレームワークを意味しています。
+
+# Directory
+```
+tree
+```
+.
+├── LICENSE
+├── README.md
+├── boostora
+│   ├── __init__.py
+│   └── core.py
+├── requirements.txt
+├── requirements_dev.txt
+├── setup.py
+└── tests
+    ├── __init__.py
+    └── test_core.py
+```
+brew install tree 
+```
